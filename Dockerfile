@@ -1,16 +1,6 @@
-FROM node:20-alpine AS build-assets
-WORKDIR /app
-COPY package*.json ./
-RUN npm install
-COPY resources ./resources
-COPY vite.config.js ./
-COPY public ./public
-RUN npm run build
-
 FROM richarvey/nginx-php-fpm:3.1.6
 
 COPY . .
-COPY --from=build-assets /app/public/build ./public/build
 
 ENV SKIP_COMPOSER 1
 ENV WEBROOT /var/www/html/public
