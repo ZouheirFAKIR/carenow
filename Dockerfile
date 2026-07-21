@@ -1,6 +1,12 @@
+FROM composer:2 AS vendor
+WORKDIR /app
+COPY composer.json composer.lock ./
+RUN composer install --no-dev --optimize-autoloader --no-scripts --no-interaction
+
 FROM richarvey/nginx-php-fpm:3.1.6
 
 COPY . .
+COPY --from=vendor /app/vendor ./vendor
 
 ENV SKIP_COMPOSER 1
 ENV WEBROOT /var/www/html/public
