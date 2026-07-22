@@ -4,7 +4,26 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\MedecinController;
 use App\Http\Controllers\RendezVousController;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
+
+// Health check route for UptimeRobot (pings Aiven MySQL)
+Route::get('/health-check', function () {
+    try {
+        DB::connection()->getPdo();
+        
+        return response()->json([
+            'status' => 'success',
+            'database' => 'connected',
+            'timestamp' => now()->toDateTimeString()
+        ], 200);
+    } catch (\Exception $e) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Database connection failed'
+        ], 500);
+    }
+});
 
 Route::get('/', function () {
     return view('home');
